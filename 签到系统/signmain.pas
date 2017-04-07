@@ -47,7 +47,7 @@ var
   red_buff: array[0..17] of Char;
   ack: array[0..255] of Char;
   HttpClient: TIdHttp; ParamList: TStringList;
-
+  equipment: string;
   {a example for your to try using .dll. add_s return i+1}
 function add_s(i: smallint): smallint; stdcall;
 far; external 'mwrf32.dll' name 'add_s';
@@ -199,7 +199,8 @@ begin
         ParamList := TStringList.Create;
         ParamList.Add('item_no=2');
         ParamList.Add('sign_card=' + databuff);
-        ParamList.Add('sign_equipment=' + red_buff);
+        ParamList.Add('sign_equipment=' + equipment);   
+        ParamList.Add('sign_equipment_id=' + red_buff);
         str := Utf8ToAnsi(HttpClient.Post('http://web.amyun.cn/api/sign/card', ParamList));
         vJson := SO(str);
         if StrToInt(vJson['code'].AsString) = 1 then
@@ -231,7 +232,7 @@ begin
           case StrToInt(vJson['msg'].AsString) of
             0: msg := '服务器繁忙！';
             210: msg := '签到未开启或已结束！';
-            211: msg := '刚刚已经签过到了，直接放行！';
+            211: msg := '刚刚已经签过到了！';
             213: msg := '机器卡无效！';
           else msg := '系统异常错误！error:' + vJson['msg'].AsString;
           end;
@@ -239,7 +240,7 @@ begin
           begin
             vItem := vJson['datas'];
             Form1.sign_card.Text := databuff;
-            Form1.sign_card.Text := vItem['sign_card'].AsString;
+            Form1.sign_card.Text := vItem['sign_no'].AsString;
             Form1.sign_name.Text := vItem['sign_name'].AsString;
             Form1.sign_job.Text := vItem['sign_job'].AsString;
             Form1.sign_phone.Text := vItem['sign_phone'].AsString;
@@ -263,7 +264,7 @@ begin
           Form1.error.Caption := '';
         end;
       except
-        Form1.error.Caption := '网络超时，请检查网络！';
+        Form1.error.Caption := '网络超时或者系统错误，请检查网络！';
         Sleep(1000);
         Form1.error.Caption := '';
       end;
@@ -300,6 +301,7 @@ begin
     ShowMessage('找不到艾美e族签到设备！');
     ExitProcess(0); Application.Terminate;
   end;
+  equipment := InputBoxEx('艾美e族实体会员卡签到系统', '签到机器编码：　　', '1');
   MyThread := TMyThread.Create(False);
 end;
 
