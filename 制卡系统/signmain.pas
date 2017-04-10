@@ -4,19 +4,28 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, StrUtils, ExtCtrls, Rc4_Unit, InputBox;
+  Dialogs, StdCtrls, superobject, StrUtils, ExtCtrls, Rc4_Unit, InputBox, IDHttp;
 
 type
   TForm1 = class(TForm)
     Panel1: TPanel;
     Button2: TButton;
-    Label1: TLabel;
     Edit1: TEdit;
-    Panel2: TPanel;
+    Label1: TLabel;
     Button1: TButton;
+    Label2: TLabel;
+    Edit2: TEdit;
+    Label3: TLabel;
+    Edit3: TEdit;
+    Label4: TLabel;
+    Edit4: TEdit;
+    Edit5: TEdit;
+    Label5: TLabel;
+    Button3: TButton;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -35,6 +44,8 @@ var
   status: array[0..18] of Char;
   databuff: array[0..15] of Char;
   ack: array[0..255] of Char;
+  HttpClient: TIdHttp;
+  ParamList: TStringList;
 
   {a example for your to try using .dll. add_s return i+1}
 function add_s(i: smallint): smallint; stdcall;
@@ -245,6 +256,73 @@ begin
       st := rf_beep(icdev, 10);
       ShowMessage('会员卡号：' + Edit1.Text + '写入成功！');
       Edit1.Text := IntToStr(StrToInt(Edit1.Text) + 1);
+      Edit2.Text := IntToStr(StrToInt(Edit2.Text) + 1);
+    end;
+  end;
+end;
+
+procedure TForm1.Button3Click(Sender: TObject);
+var vJson, vItem: ISuperObject; str, msg: string;
+begin
+  nkey := 'FFFFFFFFFFFF';
+  st := rf_load_key_hex(icdev, loadmode, sector, nkey);
+  st := rf_card(icdev, 1, @snr);
+  st := rf_authentication(icdev, loadmode, sector);
+  wdata := '00049BE2CD22ff07806900049BE2CD22';
+  st := rf_write_hex(icdev, (sector * 4 + 3), wdata);
+  nkey := '00049BE2CD22';
+  st := rf_load_key_hex(icdev, loadmode, sector, nkey);
+  st := rf_card(icdev, 1, @snr);
+  if st <> 0 then
+  begin
+    ShowMessage('找不到卡！');
+  end
+  else
+  begin
+    st := rf_authentication(icdev, loadmode, sector);
+    wdata := PAnsiChar(Edit1.Text);
+    st := rf_write(icdev, block, wdata);
+    if st <> 0 then
+    begin
+      ShowMessage('写入失败！');
+    end
+    else
+    begin
+      st := rf_beep(icdev, 10);
+      Edit1.Text := IntToStr(StrToInt(Edit1.Text) + 1);
+      Edit2.Text := IntToStr(StrToInt(Edit2.Text) + 1);
+      try
+        HttpClient := TIdHTTP.Create(nil);
+        ParamList := TStringList.Create;
+        ParamList.Add('item_no=2');
+        ParamList.Add('sign_card=' + AnsiToUtf8(Edit1.Text));
+        ParamList.Add('sign_no=' + AnsiToUtf8(Edit2.Text));
+        ParamList.Add('sign_name=' + AnsiToUtf8(Edit3.Text));
+        ParamList.Add('sign_store=' + AnsiToUtf8(Edit4.Text));
+        ParamList.Add('sign_company=' + AnsiToUtf8(Edit5.Text));
+        str := Utf8ToAnsi(HttpClient.Post('http://web.amyun.cn/api/sign/saveblock', ParamList));
+        vJson := SO(str);
+        if StrToInt(vJson['code'].AsString) = 1 then
+        begin
+          ShowMessage('会员卡号：' + Edit1.Text + '写入成功！');
+        end;
+        if vJson['code'].AsString = '0' then
+        begin
+          case StrToInt(vJson['msg'].AsString) of
+            0: msg := '服务器繁忙！';
+            210: msg := '签到未开启或已结束！';
+            211: msg := '刚刚已经签过到了！';
+            213: msg := '机器卡无效！';
+            214: msg := '机器卡已经存在！';
+          else msg := '系统异常错误！error:' + vJson['msg'].AsString;
+          end;
+          ShowMessage(msg);
+          wdata := PAnsiChar('');
+          st := rf_write(icdev, block, wdata);
+        end;
+      except
+        ShowMessage('服务器异常！');
+      end;
     end;
   end;
 end;
@@ -274,7 +352,7 @@ begin
     ShowMessage('找不到艾美e族签到设备！');
     ExitProcess(0); Application.Terminate;
   end;
-  str := InputBoxEx('艾美e族实体会员卡制卡系统', '请输入6-8位密码', '', '*');
+  str := InputBoxEx('艾美e族实体会员卡制卡系统', '请输入6-8位密码：　　', '', '*');
   if Rc4_StrEncrypt(1, str, 'jinge') = '94E1C0F04BDF4AB2363222D7AF468DB2' then
   begin
     MyThread := TMyThread.Create(False);
@@ -284,5 +362,6 @@ begin
     ExitProcess(0); Application.Terminate;
   end;
 end;
+
 end.
 

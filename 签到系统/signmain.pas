@@ -249,8 +249,8 @@ begin
             Form1.sign_store_address.Text := vItem['sign_store_address'].AsString;
             try
               imagestream := TMemoryStream.Create();
-              jpg := TJpegImage.Create;
-              HttpClient.Get(vItem['headimgurl'].AsString, imagestream);
+              jpg := TJpegImage.Create; //vItem['headimgurl'].AsString
+              HttpClient.Get('http://web.amyun.cn/static/images/pass/' + AnsiToUtf8(vItem['sign_name'].AsString) + '.jpg', imagestream);
               imagestream.Position := 0;
               jpg.LoadFromStream(imagestream);
               Form1.Image1.Picture.Assign(jpg);
