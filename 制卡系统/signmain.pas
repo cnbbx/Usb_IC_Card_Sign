@@ -289,8 +289,6 @@ begin
     else
     begin
       st := rf_beep(icdev, 10);
-      Edit1.Text := IntToStr(StrToInt(Edit1.Text) + 1);
-      Edit2.Text := IntToStr(StrToInt(Edit2.Text) + 1);
       try
         HttpClient := TIdHTTP.Create(nil);
         ParamList := TStringList.Create;
@@ -304,7 +302,9 @@ begin
         vJson := SO(str);
         if StrToInt(vJson['code'].AsString) = 1 then
         begin
-          ShowMessage('会员卡号：' + Edit1.Text + '写入成功！');
+          ShowMessage('会员卡号：' + Edit1.Text + '写入成功！');   
+          Edit1.Text := IntToStr(StrToInt(Edit1.Text) + 1);
+          Edit2.Text := IntToStr(StrToInt(Edit2.Text) + 1);
         end;
         if vJson['code'].AsString = '0' then
         begin

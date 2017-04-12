@@ -199,7 +199,7 @@ begin
         ParamList := TStringList.Create;
         ParamList.Add('item_no=2');
         ParamList.Add('sign_card=' + databuff);
-        ParamList.Add('sign_equipment=' + equipment);   
+        ParamList.Add('sign_equipment=' + equipment);
         ParamList.Add('sign_equipment_id=' + red_buff);
         str := Utf8ToAnsi(HttpClient.Post('http://web.amyun.cn/api/sign/card', ParamList));
         vJson := SO(str);
@@ -216,8 +216,8 @@ begin
           Form1.sign_store_address.Text := vItem['sign_store_address'].AsString;
           try
             imagestream := TMemoryStream.Create();
-            jpg := TJpegImage.Create;
-            HttpClient.Get(vItem['headimgurl'].AsString, imagestream);
+            jpg := TJpegImage.Create; //vItem['headimgurl'].AsString
+            HttpClient.Get('http://web.amyun.cn/static/images/pass/' + AnsiToUtf8(vItem['sign_name'].AsString) + '.jpg', imagestream);
             imagestream.Position := 0;
             jpg.LoadFromStream(imagestream);
             Form1.Image1.Picture.Assign(jpg);
@@ -225,6 +225,8 @@ begin
             Form1.Image1.Picture.Assign(nil);
           end;
           st := rf_beep(icdev, 10);
+          Form1.error.Caption := '签卡成功！';
+          Sleep(1000);
           Form1.error.Caption := '';
         end;
         if vJson['code'].AsString = '0' then
@@ -232,7 +234,7 @@ begin
           case StrToInt(vJson['msg'].AsString) of
             0: msg := '服务器繁忙！';
             210: msg := '签到未开启或已结束！';
-            211: msg := '刚刚已经签过到了！';
+            211: msg := '已经消费过了！';
             213: msg := '机器卡无效！';
           else msg := '系统异常错误！error:' + vJson['msg'].AsString;
           end;

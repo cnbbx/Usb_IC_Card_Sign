@@ -81,7 +81,7 @@ object Form1: TForm1
     Width = 121
     Height = 21
     TabOrder = 1
-    Text = '1100001'
+    Text = '10001200'
   end
   object Edit2: TEdit
     Left = 78
@@ -89,7 +89,7 @@ object Form1: TForm1
     Width = 121
     Height = 21
     TabOrder = 2
-    Text = '100001'
+    Text = '1200'
   end
   object Edit3: TEdit
     Left = 78
@@ -120,7 +120,7 @@ object Form1: TForm1
     Top = 128
     Width = 130
     Height = 50
-    Caption = #38646#26102#21345
+    Caption = #32593#21345
     TabOrder = 6
     OnClick = Button3Click
   end
