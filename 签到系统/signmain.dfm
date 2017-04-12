@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 1254
-  Top = 545
+  Left = 492
+  Top = 204
   Width = 601
   Height = 324
   Caption = #33406#32654'e'#26063#23454#20307#20250#21592#21345#31614#21040#31995#32479
@@ -768,7 +768,7 @@ object Form1: TForm1
       Width = 105
       Height = 13
       AutoSize = False
-      Caption = #36890#34892#35777#22995#21517#65306
+      Caption = #22995#12288#12288#12288#21517#65306
     end
     object sign_job_label: TLabel
       Left = 16
@@ -776,7 +776,7 @@ object Form1: TForm1
       Width = 89
       Height = 13
       AutoSize = False
-      Caption = #36890#34892#35777#32844#20301#65306
+      Caption = #32844#12288#12288#12288#20301#65306
     end
     object sign_phone_label: TLabel
       Left = 16
@@ -784,7 +784,7 @@ object Form1: TForm1
       Width = 89
       Height = 13
       AutoSize = False
-      Caption = #36890#34892#35777#25163#26426#65306
+      Caption = #25163#12288#12288#12288#26426#65306
     end
     object sign_store_label: TLabel
       Left = 16
@@ -792,7 +792,7 @@ object Form1: TForm1
       Width = 89
       Height = 13
       AutoSize = False
-      Caption = #36890#34892#35777#24215#38138#65306
+      Caption = #24215#12288#12288#12288#38138#65306
     end
     object sign_company_label: TLabel
       Left = 16
@@ -805,10 +805,10 @@ object Form1: TForm1
     object sign_store_address_label: TLabel
       Left = 16
       Top = 166
-      Width = 73
+      Width = 81
       Height = 13
       AutoSize = False
-      Caption = #24215#38138#22320#22336#65306
+      Caption = #22320#12288#12288#12288#22336#65306
     end
     object sign_card: TEdit
       Left = 124
